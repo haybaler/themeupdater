@@ -3,7 +3,6 @@ import {
   Provider as GadgetProvider,
   useGadget,
 } from "@gadgetinc/react-shopify-app-bridge";
-import { NavMenu } from "@shopify/app-bridge-react";
 import { Box, Card, Page, Spinner, Text } from "@shopify/polaris";
 import { useEffect } from "react";
 import {
@@ -31,7 +30,7 @@ function Error404() {
     if (appURL && location.pathname === new URL(appURL).pathname) {
       navigate("/", { replace: true });
     }
-  }, [location.pathname]);
+  }, [location.pathname, navigate]);
 
   return <div>404 not found</div>;
 }
@@ -47,11 +46,7 @@ function App() {
     )
   );
 
-  return (
-    <>
-      <RouterProvider router={router} />
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 function Layout() {
@@ -67,8 +62,8 @@ function Layout() {
 }
 
 function AuthenticatedApp() {
-  // we use `isAuthenticated` to render pages once the OAuth flow is complete!
   const { isAuthenticated, loading } = useGadget();
+
   if (loading) {
     return (
       <div
@@ -80,7 +75,7 @@ function AuthenticatedApp() {
           width: "100%",
         }}
       >
-        <Spinner accessibilityLabel="Spinner example" size="large" />
+        <Spinner accessibilityLabel="Loading spinner" size="large" />
       </div>
     );
   }
@@ -91,12 +86,6 @@ function EmbeddedApp() {
   return (
     <>
       <Outlet />
-      <NavMenu>
-        <Link to="/" rel="home">
-          Shop Information
-        </Link>
-        <Link to="/about">About</Link>
-      </NavMenu>
     </>
   );
 }

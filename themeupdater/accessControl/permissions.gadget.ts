@@ -84,5 +84,69 @@ export const permissions: GadgetPermissions = {
     unauthenticated: {
       storageKey: "unauthenticated",
     },
+    openai: {
+      storageKey: "hX1KFHCPI4rW",
+      default: {
+        read: true,
+        action: true,
+      },
+      models: {
+        session: {
+          read: true,
+        },
+        shopifyAsset: {
+          read: true,
+          actions: {
+            create: true,
+            delete: true,
+            update: true,
+          },
+        },
+        shopifyFile: {
+          read: true,
+          actions: {
+            create: true,
+            delete: true,
+            update: true,
+          },
+        },
+        shopifyGdprRequest: {
+          read: true,
+          actions: {
+            create: true,
+            update: true,
+          },
+        },
+        shopifyShop: {
+          read: true,
+          actions: {
+            install: true,
+            reinstall: true,
+            uninstall: true,
+            update: true,
+          },
+        },
+        shopifySync: {
+          read: true,
+          actions: {
+            abort: true,
+            complete: true,
+            error: true,
+            run: true,
+          },
+        },
+        shopifyTheme: {
+          read: true,
+          actions: {
+            create: true,
+            delete: true,
+            update: true,
+          },
+        },
+      },
+      actions: {
+        scheduledShopifySync: true,
+      },
+    },
   },
 };

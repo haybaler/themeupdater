@@ -1,70 +1,81 @@
-import { AutoTable } from "@gadgetinc/react/auto/polaris";
-import {
-  Banner,
-  BlockStack,
-  Box,
-  Card,
-  Layout,
-  Link,
-  Page,
-  Text,
-} from "@shopify/polaris";
-import { api } from "../api";
+// File: web/routes/index.jsx
+import React, { useState } from 'react';
+import { api } from '../api';
+import { Card, Button, TextField, Toast, Spinner, Page } from '@shopify/polaris';
+import { rewriteThemeCode } from '../openai'; // Ensure this path is correct
+import { useGadget } from '@gadgetinc/react-shopify-app-bridge';
 
-export default function () {
+function Index() {
+  const [themeCode, setThemeCode] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ show: false, content: '' });
+
+  const { isAuthenticated } = useGadget();
+
+  if (!isAuthenticated) {
+    return <Spinner accessibilityLabel="Loading spinner" size="large" />;
+  }
+
+  const handleDuplicate = async () => {
+    setLoading(true);
+    try {
+      await api.shopifyTheme.create({ themeCode }); // Adjust parameters as needed
+      setToast({ show: true, content: 'Theme duplicated successfully' });
+    } catch (error) {
+      console.error("Error duplicating theme:", error);
+      setToast({ show: true, content: 'Error duplicating theme' });
+    }
+    setLoading(false);
+  };
+
+  const handleAudit = async () => {
+    setLoading(true);
+    try {
+      const cleanedCode = await rewriteThemeCode(themeCode);
+      setThemeCode(cleanedCode);
+      setToast({ show: true, content: 'Theme audited and cleaned successfully' });
+    } catch (error) {
+      console.error("Error auditing theme:", error);
+      setToast({ show: true, content: 'Error auditing theme' });
+    }
+    setLoading(false);
+  };
+
+  const handlePublish = async () => {
+    setLoading(true);
+    try {
+      await api.shopifyTheme.publish({ themeCode }); // Adjust parameters as needed
+      setToast({ show: true, content: 'Theme published successfully' });
+    } catch (error) {
+      console.error("Error publishing theme:", error);
+      setToast({ show: true, content: 'Error publishing theme' });
+    }
+    setLoading(false);
+  };
+
   return (
-    <Page title="App">
-      <Layout>
-        <Layout.Section>
-          <Banner tone="success">
-            <Text variant="bodyMd" as="p">
-              Successfully connected your Gadget app to Shopify
-            </Text>
-          </Banner>
-        </Layout.Section>
-        <Layout.Section>
-          <Card>
-            <img
-              className="gadgetLogo"
-              src="https://assets.gadget.dev/assets/icon.svg"
-            />
-            <BlockStack gap="200">
-              <Text variant="headingMd" as="h1" alignment="center">
-                Edit this page:{" "}
-                <Link
-                  url={`/edit/${window.gadgetConfig.env.GADGET_ENV}/files/web/routes/index.jsx`}
-                  target="_blank"
-                  removeUnderline
-                >
-                  web/routes/index.jsx
-                </Link>
-              </Text>
-            </BlockStack>
-          </Card>
-        </Layout.Section>
-        <Layout.Section>
-          <Card padding="0">
-            {/* use Autocomponents to build UI quickly: https://docs.gadget.dev/guides/frontend/autocomponents  */}
-            <AutoTable
-              //@ts-ignore
-              model={api.shopifyShop}
-              columns={["name", "countryName", "currency", "customerEmail"]}
-            />
-            <Box padding="400">
-              <Text variant="headingMd" as="h6">
-                Shop records fetched from:{" "}
-                <Link
-                  url={`/edit/${window.gadgetConfig.env.GADGET_ENV}/model/DataModel-Shopify-Shop/data`}
-                  target="_blank"
-                  removeUnderline
-                >
-                  api/models/shopifyShop/data
-                </Link>
-              </Text>
-            </Box>
-          </Card>
-        </Layout.Section>
-      </Layout>
+    <Page title="Theme Management">
+      {toast.show && <Toast content={toast.content} onDismiss={() => setToast({ show: false, content: '' })} />}
+      
+      <Card sectioned>
+        <TextField
+          label="Theme Code"
+          value={themeCode}
+          onChange={(value) => setThemeCode(value)}
+          multiline={8}
+        />
+        <Button primary onClick={handleDuplicate} loading={loading} disabled={loading}>
+          Duplicate Theme
+        </Button>
+        <Button onClick={handleAudit} loading={loading} disabled={loading}>
+          Audit Theme
+        </Button>
+        <Button onClick={handlePublish} loading={loading} disabled={loading}>
+          Publish Theme
+        </Button>
+      </Card>
     </Page>
   );
 }
+
+export default Index;
