@@ -19,7 +19,9 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "6.15.0",
     "shopify-api-node": "^3.12.6",
-    "openai": "^4.16.1"
+    "openai": "^4.16.1",
+    "axios": "^0.21.1",
+
   },
   "devDependencies": {
     "@types/node": "^20.12.8",
